@@ -35,6 +35,9 @@ class Cinema(UUIDMixin):
 
     films=models.ManyToManyField('Film', through='FilmCinema', verbose_name='Films')
 
+    def __str__(self) -> str:
+        return f'name={self.name} address={self.address}'
+
     class Meta:
         db_table='"api_data"."cinema"'
 
@@ -45,12 +48,18 @@ class Film(UUIDMixin):
 
     cinemas = models.ManyToManyField('Cinema', through='FilmCinema', verbose_name='cinemas')
 
+    def __str__(self) -> str:
+        return f'name={self.name} rating={self.rating}'
+
     class Meta:
         db_table='"api_data"."film"'
 
 class FilmCinema(UUIDMixin):
     cinema = models.ForeignKey(Cinema, verbose_name='cinema', on_delete=models.CASCADE)
     film = models.ForeignKey(Film, verbose_name='film', on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f'film={self.film.name} cinema={self.cinema.name}'
 
     class Meta:
         db_table = '"api_data"."film_to_cinema"'
@@ -62,3 +71,9 @@ class Ticket(UUIDMixin):
     price = models.DecimalField(decimal_places=2,max_digits=10,null=False, validators=[check_positive])
 
     film_cinema = models.OneToOneField(FilmCinema, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f'film={self.film_cinema.film.name} cinema={self.film_cinema.cinema.name}'
+
+    class Meta:
+        db_table = '"api_data"."ticket"'
