@@ -53,7 +53,7 @@ class FilmCinema(UUIDMixin):
     film = models.ForeignKey(Film, verbose_name='film', on_delete=models.CASCADE)
 
     class Meta:
-        db_table = '"api_data"."film_to_cinema"',
+        db_table = '"api_data"."film_to_cinema"'
         unique_together = (('cinema','film'),)
 
 class Ticket(UUIDMixin):
