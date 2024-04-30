@@ -35,6 +35,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
+    'rest_framework.authtoken',
     'cinephile_server',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -71,6 +73,12 @@ TEMPLATES = [
         },
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'cinephile_server.auth.TokenAuthentication',
+    ],
+}
 
 WSGI_APPLICATION = 'cinephile.wsgi.application'
 
