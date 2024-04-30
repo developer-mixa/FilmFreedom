@@ -76,7 +76,7 @@ TEMPLATES = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'cinephile_server.auth.TokenAuthentication',
+        'cinephile_server.auth.BearerAuthentication',
     ],
 }
 
