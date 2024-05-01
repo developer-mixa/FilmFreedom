@@ -8,9 +8,9 @@ from cinephile_server.views import FilmCinemaCreate, FilmCinemaUpdateDestroy
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
+    path('accounts/', include('rest_framework.urls')),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
-    path('account/register', UserCreate.as_view()),
+    path('accounts/register', UserCreate.as_view()),
     path('cinemas/', CinemaCreate.as_view(), name='cinema-list-create'),
     path('cinemas/<uuid:pk>/', CinemaUpdateDestroy.as_view(), name='cinema-detail'),
     path('films/', FilmCreate.as_view(), name='film-list-create'),
