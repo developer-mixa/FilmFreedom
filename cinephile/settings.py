@@ -76,7 +76,9 @@ TEMPLATES = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
         'cinephile_server.auth.BearerAuthentication',
+        #'rest_framework.authentication.TokenAuthentication',
     ],
     #'DEFAULT_PERMISSION_CLASSES': (
     #    'rest_framework.permissions.IsAuthenticated',
@@ -97,10 +99,12 @@ DATABASES = {
         'PASSWORD': getenv('PG_PASSWORD'),
         'HOST': getenv('PG_HOST'),
         'PORT': getenv('PG_PORT'),
-        'OPTIONS': {'options': '-c search_path=public,api_data'},
+        'OPTIONS': {'options': '-c search_path=api_data,public'},
+        'TEST': {'NAME': 'test_db'},
     }
 }
 
+TEST_RUNNER = 'tests.runner.PostgresSchemaRunner'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

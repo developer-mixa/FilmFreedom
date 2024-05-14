@@ -7,7 +7,7 @@ from .forms import FilmForm, TicketForm
 class FilmCinemaInline(admin.TabularInline):
     model = FilmCinema
     extra = 1
-
+    
 #admins
 
 @admin.register(Cinema)
@@ -25,4 +25,7 @@ class FilmAdmin(admin.ModelAdmin):
 class Ticket(admin.ModelAdmin):
     model = Ticket
     form = TicketForm
-    
+
+@admin.register(FilmCinema)
+class FilmCinemaAdmin(admin.ModelAdmin):
+    model = FilmCinema

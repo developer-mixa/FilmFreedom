@@ -1,9 +1,10 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from uuid import uuid4
+from django.utils import timezone
 
 class UUIDMixin(models.Model):
-    id = models.UUIDField(primary_key=True,blank=True, editable=False, default=uuid4)
+    id = models.UUIDField(primary_key=True, blank=True, editable=False, default=uuid4)
 
     class Meta:
         abstract=True
@@ -66,7 +67,7 @@ class FilmCinema(UUIDMixin):
         unique_together = (('cinema','film'),)
 
 class Ticket(UUIDMixin):
-    time = models.TimeField(null=False),
+    time = models.TimeField(null=False)
     place = models.TextField(max_length=256, null=False, blank=False)
     price = models.DecimalField(decimal_places=2,max_digits=10,null=False, validators=[check_positive])
 
