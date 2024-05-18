@@ -53,3 +53,10 @@ def main_page(request):
         'index.html',
         {}
     )
+
+def films_page(request):
+    return render(
+        request,
+        'films.html',
+        {'films': Film.objects.all()}
+    )
