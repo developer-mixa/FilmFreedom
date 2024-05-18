@@ -2,7 +2,102 @@
 <html lang="en">
 
 <head>
-  {% block title %}<title>Films site</title>{% endblock %}
+  <style>
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-around;
+  background-color: #333;
+  color: white;
+}
+
+nav ul li a {
+  display: block;
+  padding: 15px;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+nav ul li a:hover {
+  color: rgb(173, 173, 173);
+}
+
+.hero {
+  background-image: url('https://picography.co/wp-content/uploads/2024/05/picography-vintage-film-slr-camera-768x513.jpg');
+  background-size: cover;
+  height: 1000px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.search-section {
+  padding: 50px 0;
+  background-color: white;
+}
+
+.button-blue:hover {
+  background-color: #0056b3;
+}
+
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+}
+
+
+
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Films site</title>
 </head>
 
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="#">Search films</a></li>
+        <li><a href="#">Search cinemas</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <div class="content">
+    <main>
+      <section class="hero">
+        <h1>Welcome to the website for finding tickets for free movies and cinemas!</h1>
+      </section>
+    </main>
+  </div>
+  
+  <footer>
+    <p>&copy; 2024 Films Site. All rights reserved.</p>
+  </footer>
+</body>
 </html>

@@ -47,5 +47,9 @@ class TicketUpdateDestroy(LoginRequired, generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TicketSerializer
 
 
-def main_page(self):
-    pass
+def main_page(request):
+    return render(
+        request,
+        'index.html',
+        {}
+    )
