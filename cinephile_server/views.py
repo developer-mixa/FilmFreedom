@@ -45,3 +45,7 @@ class TicketCreate(LoginRequired, generics.ListCreateAPIView):
 class TicketUpdateDestroy(LoginRequired, generics.RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
+
+
+def main_page(self):
+    pass
