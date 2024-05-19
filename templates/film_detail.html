@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Film Details</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        strong {
+            color: #ccc;
+        }
+       .film-poster {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+       .cinema-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+       .cinema-item {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+       .cinema-name {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="film-details">
+        <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/4/4d/Avengers_Infinity_War_poster.jpg/204px-Avengers_Infinity_War_poster.jpg" alt="{{ film.name }}" class="film-poster">
+        <h1>{{ film.name }}</h1>
+        <p><strong>Description:</strong> {{ film.description }}</p>
+        <p><strong>Rating:</strong> {{ film.rating }}</p>
+    </div>
+    <h2>Cinemas</h2>
+    <ul class="cinema-list">
+        {% for cinema in film.cinemas.all %}
+        <li class="cinema-item">
+            <span class="cinema-name">{{ cinema.name }}</span>
+            <p>{{ cinema.address }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

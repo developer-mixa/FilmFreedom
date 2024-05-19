@@ -21,15 +21,15 @@
 
 <div class="container">
     <div class="row">
-        {% for film in films %}
+        {% for cinema in cinemas %}
         <div class="col-md-4">
             <div class="card movie-card">
-                <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/4/4d/Avengers_Infinity_War_poster.jpg/204px-Avengers_Infinity_War_poster.jpg" alt="Movie Poster" style="width:100%">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Cinemaaustralia.jpg/266px-Cinemaaustralia.jpg" alt="Movie Poster" style="width:100%">
                 <div class="card-body">
-                    <h5 class="card-title">{{ film.name }}</h5>
-                    <p class="card-text">{{ film.description | truncatechars:150 }}</p>
+                    <h5 class="card-title">{{ cinema.name }}</h5>
+                    <p class="card-text">{{ cinema.address | truncatechars:150 }}</p>
                 </div>
-                <a href="{% url 'film' film.id %}" class="btn btn-primary read-more-btn">Read More</a>
+                <a href="#" class="btn btn-primary read-more-btn">Read More</a>
             </div>
         </div>
         {% endfor %}
