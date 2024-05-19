@@ -31,14 +31,37 @@
             list-style-type: none;
             padding-left: 0;
         }
-       .cinema-item {
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-       .cinema-name {
-            color: #fff;
-        }
+        .card-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+   .cinema-item {
+        border-bottom: none;
+        padding: 15px;
+        margin: 0;
+    }
+
+   .cinema-name {
+        color: #fff;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+   .cinema-details {
+        color: #aaa;
+        font-size: 14px;
+    }
+    
+    .card-container:hover {
+        background-color: #474646;
+    }
     </style>
 </head>
 <body>
@@ -51,10 +74,12 @@
     <h2>Cinemas</h2>
     <ul class="cinema-list">
         {% for cinema in film.cinemas.all %}
-        <li class="cinema-item">
-            <span class="cinema-name">{{ cinema.name }}</span>
-            <p>{{ cinema.address }}</p>
-        </li>
+        <div class="card-container">
+            <div class="cinema-item">
+                <span class="cinema-name">{{ cinema.name }}</span>
+                <p class="cinema-details">Адрес: {{ cinema.address }}</p>
+            </div>
+        </div>
         {% endfor %}
     </ul>
 </body>
