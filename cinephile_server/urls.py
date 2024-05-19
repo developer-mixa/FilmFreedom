@@ -6,7 +6,6 @@ from cinephile_server.views import TicketCreate, TicketUpdateDestroy
 from cinephile_server.views import FilmCinemaCreate, FilmCinemaUpdateDestroy
 from cinephile_server.views import main_page, films_page, cinemas_page, film_detail_page
 
-
 urlpatterns = [
     path('rest/cinemas/', CinemaCreate.as_view(), name='rest-cinema-list-create'),
     path('rest/cinemas/<uuid:pk>/', CinemaUpdateDestroy.as_view(), name='rest-cinema-detail'),

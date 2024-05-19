@@ -1,10 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.authtoken.views import obtain_auth_token
-from cinephile_server.views import UserCreate, CinemaCreate, CinemaUpdateDestroy
-from cinephile_server.views import FilmCreate, FilmUpdateDestroy
-from cinephile_server.views import TicketCreate, TicketUpdateDestroy
-from cinephile_server.views import FilmCinemaCreate, FilmCinemaUpdateDestroy
+from cinephile_server.views import UserCreate
 
 urlpatterns = [
     path('admin/', admin.site.urls),

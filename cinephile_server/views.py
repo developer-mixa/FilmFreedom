@@ -46,32 +46,20 @@ class TicketUpdateDestroy(LoginRequired, generics.RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
 
+def generate_page(request, template_name, context=None):
+    if context is None:
+        context = {}
+    return render(request, template_name, context)
 
 def main_page(request):
-    return render(
-        request,
-        'index.html',
-        {}
-    )
+    return generate_page(request, 'index.html')
 
 def films_page(request):
-    return render(
-        request,
-        'films.html',
-        {'films': Film.objects.all()}
-    )
+    return generate_page(request, 'films.html', {'films': Film.objects.all()})
 
 def cinemas_page(request):
-    return render(
-        request,
-        'cinemas.html',
-        {'cinemas': Film.objects.all()}
-    )
+    return generate_page(request, 'cinemas.html', {'cinemas': Film.objects.all()})
 
 def film_detail_page(request, pk):
     film = Film.objects.get(id=pk)
-    return render(
-        request,
-        'film_detail.html',
-        {'film': film}
-    )
+    return generate_page(request, 'film_detail.html', {'film': film})
