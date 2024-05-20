@@ -9,6 +9,14 @@ class UUIDMixin(models.Model):
     class Meta:
         abstract=True
 
+MAX_URL_LENGTH = 190000
+
+class UrlMixin(models.Model):
+    url_image = models.TextField(max_length=MAX_URL_LENGTH, null=True, default=None)
+
+    class Meta:
+        abstract=True
+
 def check_positive(number: int | float):
     if number < 0:
         raise ValidationError(
@@ -30,10 +38,10 @@ def check_address_len(address: str):
             params={'address' : address}
         )
 
-class Cinema(UUIDMixin):
+
+class Cinema(UUIDMixin, UrlMixin):
     name = models.TextField(max_length=80, null=False, blank=False)
     address = models.TextField(max_length=1024, null=False, validators=[check_address_len])
-
     films=models.ManyToManyField('Film', through='FilmCinema', verbose_name='Films')
 
     def __str__(self) -> str:
@@ -42,7 +50,7 @@ class Cinema(UUIDMixin):
     class Meta:
         db_table='"api_data"."cinema"'
 
-class Film(UUIDMixin):
+class Film(UUIDMixin, UrlMixin):
     name = models.TextField(max_length=80, null=False, blank=False)
     description = models.TextField(max_length=1024, null=False, blank=False)
     rating = models.DecimalField(decimal_places=1,max_digits=2,null=False, validators=[check_positive, check_rating])    
