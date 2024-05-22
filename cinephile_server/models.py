@@ -1,7 +1,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from uuid import uuid4
-from django.utils import timezone
+from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 class UUIDMixin(models.Model):
     id = models.UUIDField(primary_key=True, blank=True, editable=False, default=uuid4)
@@ -80,6 +81,8 @@ class Ticket(UUIDMixin):
     price = models.DecimalField(decimal_places=2,max_digits=10,null=False, validators=[check_positive])
 
     film_cinema = models.OneToOneField(FilmCinema, on_delete=models.CASCADE)
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self) -> str:
         return f'film={self.film_cinema.film.name} cinema={self.film_cinema.cinema.name}'

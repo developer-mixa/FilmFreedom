@@ -24,12 +24,12 @@
         {% for cinema in cinemas %}
         <div class="col-md-4">
             <div class="card movie-card">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Cinemaaustralia.jpg/266px-Cinemaaustralia.jpg" alt="Movie Poster" style="width:100%">
+                <img src="{{ cinema.url_image }}" alt="Movie Poster" style="width:100%">
                 <div class="card-body">
                     <h5 class="card-title">{{ cinema.name }}</h5>
                     <p class="card-text">{{ cinema.address | truncatechars:150 }}</p>
                 </div>
-                <a href="#" class="btn btn-primary read-more-btn">Read More</a>
+                <a href="{% url 'cinema' cinema.id %}" class="btn btn-primary read-more-btn">Read More</a>
             </div>
         </div>
         {% endfor %}

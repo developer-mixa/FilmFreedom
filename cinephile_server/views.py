@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, HttpResponse
 
 from rest_framework import generics
 from django.contrib.auth.models import User
@@ -46,10 +46,41 @@ class TicketUpdateDestroy(LoginRequired, generics.RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
 
+# helpers
+
 def generate_page(request, template_name, context=None):
     if context is None:
         context = {}
     return render(request, template_name, context)
+
+def get_ticket_by_film_cinema(film_id, cinema_id):    
+    film = Film.objects.get(id=film_id)
+    cinema = Cinema.objects.get(id=cinema_id)
+    film_cinema = FilmCinema.objects.get(film=film, cinema=cinema)
+    try:
+        ticket = Ticket.objects.get(film_cinema=film_cinema)
+    except Ticket.DoesNotExist:
+        return None
+    return ticket
+
+def get_tickets_by_cinema(cinema: Cinema) -> list[Ticket]:
+    film_cinemas = []
+    tickets = []
+    for film in cinema.films.all():
+        try:
+            film_cinema = FilmCinema.objects.get(film=film, cinema=cinema)
+            film_cinemas.append(film_cinema)
+        except FilmCinema.DoesNotExist:
+            continue
+    for film_cinema in film_cinemas:
+        try:
+            ticket = Ticket.objects.get(film_cinema=film_cinema)
+            tickets.append(ticket)
+        except Ticket.DoesNotExist:
+            continue
+    return tickets
+
+# pages
 
 def main_page(request):
     return generate_page(request, 'index.html')
@@ -58,8 +89,25 @@ def films_page(request):
     return generate_page(request, 'films.html', {'films': Film.objects.all()})
 
 def cinemas_page(request):
-    return generate_page(request, 'cinemas.html', {'cinemas': Film.objects.all()})
+    return generate_page(request, 'cinemas.html', {'cinemas': Cinema.objects.all()})
 
 def film_detail_page(request, pk):
     film = Film.objects.get(id=pk)
     return generate_page(request, 'film_detail.html', {'film': film})
+
+def cinema_detail_page(request, pk):
+    cinema = Cinema.objects.get(id=pk)
+    tickets = get_tickets_by_cinema(cinema)
+    return generate_page(request, 'cinema_detail.html', {'cinema': cinema, 'tickets': tickets})
+
+# queries
+
+# developing...
+
+# def book_ticket(request):
+#     if request.method == 'POST':
+#         film_id = request.GET.get('film_id')
+#         cinema_id = request.GET.get('cinema_id')
+#         ticket = get_ticket_by_film_cinema(film_id, cinema_id)
+
+#     return HttpResponse("You successfuly booked ticket!")

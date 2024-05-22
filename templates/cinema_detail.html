@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Film Details</title>
+    <title>Cinema Details</title>
     <style>
         body {
             background-color: black;
@@ -21,7 +21,7 @@
         strong {
             color: #ccc;
         }
-       .film-poster {
+       .cinema-poster {
             max-width: 100%;
             height: auto;
             display: block;
@@ -65,22 +65,37 @@
     </style>
 </head>
 <body>
-    <div class="film-details">
-        <img src="{{ film.url_image }}" alt="{{ film.name }}" class="film-poster">
-        <h1>{{ film.name }}</h1>
-        <p><strong>Description:</strong> {{ film.description }}</p>
-        <p><strong>Rating:</strong> {{ film.rating }}</p>
+    <div class="cinema-details">
+        <img src="{{ cinema.url_image }}" alt="{{ cinema.name }}" class="cinema-poster">
+        <h1>{{ cinema.name }}</h1>
+        <p><strong>Address:</strong> {{ cinema.address }}</p>
     </div>
-    <h2>Cinemas</h2>
+    <h2>Films</h2>
     <ul class="cinema-list">
-        {% for cinema in film.cinemas.all %}
+        {% for film in cinema.films.all %}
         <div class="card-container">
             <div class="cinema-item">
-                <span class="cinema-name">{{ cinema.name }}</span>
-                <p class="cinema-details">Address: {{ cinema.address }}</p>
+                <span class="cinema-name">{{ film.name }}</span>
             </div>
         </div>
         {% endfor %}
+    </ul>
+    <h2>Tickets</h2>
+    <ul class="ticket-list">
+        {% if tickets %}
+            {% for ticket in tickets %}
+            <li>
+                <button onclick="">Buy Ticket</button>
+                <strong>Time:</strong> {{ ticket.time }}
+                <br>
+                <strong>Place:</strong> {{ ticket.place }}
+                <br>
+                <strong>Price:</strong> {{ ticket.price }}
+            </li>
+            {% endfor %}
+        {% else %}
+            <p>There is no tickets</p>
+        {% endif %}
     </ul>
 </body>
 </html>
