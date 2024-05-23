@@ -10,6 +10,7 @@
             font-family: Arial, sans-serif;
             line-height: 1.6;
             padding: 20px;
+            height: 400px;
         }
         h1 {
             text-align: center;
@@ -23,7 +24,7 @@
         }
        .cinema-poster {
             max-width: 100%;
-            height: auto;
+            height: 400px;
             display: block;
             margin: 0 auto;
         }
@@ -85,7 +86,15 @@
         {% if tickets %}
             {% for ticket in tickets %}
             <li>
-                <button onclick="">Buy Ticket</button>
+                {% if not ticket.user %}
+                    <form action="{% url 'book_ticket' %}?ticket_id={{ ticket.id }}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Buy Ticket</button>
+                    </form>
+                {% else %}
+                    <strong>This ticket has booked</strong>
+                    <br>
+                {% endif %}
                 <strong>Time:</strong> {{ ticket.time }}
                 <br>
                 <strong>Place:</strong> {{ ticket.place }}
@@ -99,3 +108,4 @@
     </ul>
 </body>
 </html>
+    

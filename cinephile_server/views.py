@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, HttpResponse
-
+from django.core.handlers.wsgi import WSGIRequest
 from rest_framework import generics
 from django.contrib.auth.models import User
+from django.http import HttpRequest
 from .serializers import UserSerializer, CinemaSerializer, FilmSerializer, TicketSerializer, FilmCinemaSerializer
 from .models import Cinema, Film, Ticket, FilmCinema
 from .auth import LoginRequired, LoginAdminRequired
+from .forms import RegistrationForm
 
 class UserCreate(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -53,16 +55,6 @@ def generate_page(request, template_name, context=None):
         context = {}
     return render(request, template_name, context)
 
-def get_ticket_by_film_cinema(film_id, cinema_id):    
-    film = Film.objects.get(id=film_id)
-    cinema = Cinema.objects.get(id=cinema_id)
-    film_cinema = FilmCinema.objects.get(film=film, cinema=cinema)
-    try:
-        ticket = Ticket.objects.get(film_cinema=film_cinema)
-    except Ticket.DoesNotExist:
-        return None
-    return ticket
-
 def get_tickets_by_cinema(cinema: Cinema) -> list[Ticket]:
     film_cinemas = []
     tickets = []
@@ -100,14 +92,45 @@ def cinema_detail_page(request, pk):
     tickets = get_tickets_by_cinema(cinema)
     return generate_page(request, 'cinema_detail.html', {'cinema': cinema, 'tickets': tickets})
 
+def booked_tickets_page(request: WSGIRequest):
+    if request.user.is_authenticated:
+        user = request.user
+        tickets = Ticket.objects.filter(user=user)
+        return generate_page(request, 'booked_tickets.html', {'tickets': tickets})
+    return redirect('/accounts/profile/')
+
+def profile_page(request: WSGIRequest):
+    return generate_page(request, 'profile.html', {'user': request.user})
+
+def register_page(request: WSGIRequest):
+    errors = ''
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.save()
+            return redirect('')
+        else:
+            errors = form.errors
+    else:
+        form = RegistrationForm()
+    return render(
+        request,
+        'registration/register.html',
+        {'form': form, 'errors': errors},
+    )
+
 # queries
 
-# developing...
-
-# def book_ticket(request):
-#     if request.method == 'POST':
-#         film_id = request.GET.get('film_id')
-#         cinema_id = request.GET.get('cinema_id')
-#         ticket = get_ticket_by_film_cinema(film_id, cinema_id)
-
-#     return HttpResponse("You successfuly booked ticket!")
+def book_ticket(request: WSGIRequest):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            ticket_id = request.GET.get('ticket_id')
+            print(ticket_id)
+            ticket = Ticket.objects.get(id=ticket_id)
+            ticket.user = request.user
+            ticket.save()
+        else:
+            return redirect('login/')
+        return booked_tickets_page(request)
+    return HttpResponse('Something went wrong...')

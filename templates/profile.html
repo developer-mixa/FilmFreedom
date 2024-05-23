@@ -1,0 +1,31 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <h2 class="mb-4 text-light">Profile</h2>
+            {% if user.is_authenticated %}
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Hello, {{ user.username }}!</h5>
+                    <p class="card-text"><small>You are logged in.</small></p>
+                    <form action="/accounts/logout/" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Not Logged In</h5>
+                    <p class="card-text"><small>You need to log in to view this profile.</small></p>
+                    <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
