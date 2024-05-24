@@ -1,21 +1,17 @@
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from cinephile_server.views import CinemaCreate, CinemaUpdateDestroy
-from cinephile_server.views import FilmCreate, FilmUpdateDestroy
-from cinephile_server.views import TicketCreate, TicketUpdateDestroy
-from cinephile_server.views import FilmCinemaCreate, FilmCinemaUpdateDestroy
 from cinephile_server import views
+from rest_framework.routers import DefaultRouter
 
+router = DefaultRouter()
+router.register(r'cinema', views.CinemaViewSet, 'cinema')
+router.register(r'film', views.FilmViewSet, 'film')
+router.register(r'film_cinema', views.FilmCinemaViewSet, 'filmcinema')
+router.register(r'ticket', views.TicketViewSet, 'ticket')
+router.register(r'user', views.UserViewSet, 'user')
 
 urlpatterns = [
-    path('rest/cinemas/', CinemaCreate.as_view(), name='rest-cinema-list-create'),
-    path('rest/cinemas/<uuid:pk>/', CinemaUpdateDestroy.as_view(), name='rest-cinema-detail'),
-    path('rest/films/', FilmCreate.as_view(), name='rest-film-list-create'),
-    path('rest/films/<uuid:pk>/', FilmUpdateDestroy.as_view(), name='rest-film-detail'),
-    path('rest/tickets/', TicketCreate.as_view(), name='rest-ticket-list-create'),
-    path('rest/tickets/<uuid:pk>/', TicketUpdateDestroy.as_view(), name='rest-ticket-detail'),
-    path('rest/film_cinemas/', FilmCinemaCreate.as_view(), name='rest-film-cinema-list-create'),
-    path('rest/film_cinemas/<uuid:pk>/', FilmCinemaUpdateDestroy.as_view(), name='rest-film-cinema-detail'),
+    path('rest/', include(router.urls)),
     path('', views.main_page),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/profile/', views.profile_page, name='profile'),

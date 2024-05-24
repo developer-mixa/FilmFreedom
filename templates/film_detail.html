@@ -23,7 +23,7 @@
         }
        .film-poster {
             max-width: 100%;
-            height: auto;
+            height: 400px;
             display: block;
             margin: 0 auto;
         }
@@ -81,6 +81,30 @@
             </div>
         </div>
         {% endfor %}
+    </ul>
+    <ul class="ticket-list">
+        {% if tickets %}
+            {% for ticket in tickets %}
+            <li>
+                {% if not ticket.user %}
+                    <form action="{% url 'book_ticket' %}?ticket_id={{ ticket.id }}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Buy Ticket</button>
+                    </form>
+                {% else %}
+                    <strong>This ticket has booked</strong>
+                    <br>
+                {% endif %}
+                <strong>Time:</strong> {{ ticket.time }}
+                <br>
+                <strong>Place:</strong> {{ ticket.place }}
+                <br>
+                <strong>Price:</strong> {{ ticket.price }}
+            </li>
+            {% endfor %}
+        {% else %}
+            <p>There is no tickets</p>
+        {% endif %}
     </ul>
 </body>
 </html>

@@ -2,8 +2,10 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from .models import Cinema, Film, Ticket, FilmCinema
+from rest_framework.serializers import HyperlinkedModelSerializer
 
-class UserSerializer(serializers.ModelSerializer):
+
+class UserSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email', 'password')
@@ -14,22 +16,22 @@ class UserSerializer(serializers.ModelSerializer):
         Token.objects.create(user=user)
         return user
 
-class CinemaSerializer(serializers.ModelSerializer):
+class CinemaSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Cinema
         fields = '__all__'
 
-class FilmSerializer(serializers.ModelSerializer):
+class FilmSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Film
         fields = "__all__"
 
-class TicketSerializer(serializers.ModelSerializer):
+class TicketSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Ticket
         fields = "__all__"
 
-class FilmCinemaSerializer(serializers.ModelSerializer):
+class FilmCinemaSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = FilmCinema
         fields = "__all__"
