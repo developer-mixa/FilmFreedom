@@ -3,13 +3,13 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 from rest_framework import status
-from tests.utils import make_simple_test, WithAuthTest
+from tests.utils import make_simple_test, WithAuthTest, to_hyperlink
 from tests.data import TEST_CINEMA_ATTRS, TEST_FILM_ATTRS
 from cinephile_server.models import Cinema, Film, Ticket, FilmCinema
 from django.utils import timezone
 
-CinemaViewSetTest = make_simple_test(Cinema, '/rest/cinemas/', TEST_CINEMA_ATTRS)
-FilmViewSetTest = make_simple_test(Film, '/rest/films/', TEST_FILM_ATTRS)
+CinemaViewSetTest = make_simple_test(Cinema, '/rest/cinema/', TEST_CINEMA_ATTRS)
+FilmViewSetTest = make_simple_test(Film, '/rest/film/', TEST_FILM_ATTRS)
 
 class AuthTest(TestCase):
     def setUp(self):
@@ -23,7 +23,7 @@ class AuthTest(TestCase):
         }
 
         #test registration
-        response = self.client.post('/accounts/register', data)
+        response = self.client.post('/rest/user/', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         #test sign-in
@@ -38,15 +38,15 @@ class AuthTest(TestCase):
 class FilmCinemaTest(WithAuthTest):
     def manage(self, user: User, token: Token, put_status: int, delete_status: int):
         self.client.force_authenticate(user=user, token=token)
-        url = '/rest/film_cinemas/'
+        url = '/rest/film_cinema/'
 
         film = Film.objects.create(**TEST_FILM_ATTRS)
         cinema = Cinema.objects.create(**TEST_CINEMA_ATTRS)
 
         film_cinema_attrs = {'film': film, 'cinema': cinema}
         film_cinema_id = FilmCinema.objects.create(**{'film': film, 'cinema': cinema}).id
-        film_cinema_attrs['cinema'] = cinema.id
-        film_cinema_attrs['film'] = film.id
+        film_cinema_attrs['cinema'] = to_hyperlink(cinema.id, 'cinema')
+        film_cinema_attrs['film'] = to_hyperlink(film.id, 'film')
 
         self.client.session.save()
 
@@ -62,15 +62,20 @@ class FilmCinemaTest(WithAuthTest):
 
     def post(self, user, token, post_status):
         self.client.force_authenticate(user=user, token=token)
-        url = '/rest/film_cinemas/'
+        url = '/rest/film_cinema/'
 
         film = Film.objects.create(**TEST_FILM_ATTRS)
         cinema = Cinema.objects.create(**TEST_CINEMA_ATTRS)
 
-        film_cinema_attrs = {'film': str(film.id), 'cinema': str(cinema.id)}
+        film_id = to_hyperlink(film.id, 'film')
+        cinema_id = to_hyperlink(cinema.id, 'cinema')
+
+        film_cinema_attrs = {'film': film_id, 'cinema': cinema_id}
 
         # POST
         response = self.client.post(url, film_cinema_attrs)
+        if response.status_code == 400:
+            print(response.content)
         self.assertEqual(response.status_code, post_status)
 
     def test_manage_user(self):
@@ -101,10 +106,10 @@ class TicketTest(WithAuthTest):
 
     def manage(self, user: User, token: Token, put_status: int, delete_status: int):
         self.client.force_authenticate(user=user, token=token)
-        url = '/rest/tickets/'
+        url = '/rest/ticket/'
         film_cinema, ticket_attrs = self.get_ticket_attrs()
         ticket_id = Ticket.objects.create(**ticket_attrs).id
-        ticket_attrs['film_cinema'] = film_cinema.id
+        ticket_attrs['film_cinema'] = to_hyperlink(film_cinema.id, 'film_cinema')
 
         self.client.session.save()
 
@@ -120,9 +125,9 @@ class TicketTest(WithAuthTest):
     
     def post(self, user, token, post_status):
         self.client.force_authenticate(user=user, token=token)
-        url = '/rest/tickets/'
+        url = '/rest/ticket/'
         film_cinema, ticket_attrs = self.get_ticket_attrs()
-        ticket_attrs['film_cinema'] = film_cinema.id
+        ticket_attrs['film_cinema'] = to_hyperlink(film_cinema.id, 'film_cinema')
         response = self.client.post(url, ticket_attrs)
         self.assertEqual(response.status_code, post_status)
 

@@ -17,11 +17,11 @@ def make_simple_test(model_class, url, creation_attrs):
 
             #setup user
             self.data = {
-                'username': 'testuser2',
+                'username': 'testuser3',
                 'email': 'testuser@example.com',
                 'password': 'testpassword'
             }
-            self.client.post('/accounts/register', self.data)
+            self.client.post('/rest/user/', self.data)
             self.user_token = self.client.post('/api-token-auth/', self.data).data['token']
             self.user = Token.objects.get(key=self.user_token).user
 
@@ -79,6 +79,9 @@ class WithAuthTest(TestCase):
             'email': 'testuser@example.com',
             'password': 'testpassword'
         }
-        self.client.post('/accounts/register', self.data)
+        self.client.post('/rest/user/', self.data)
         self.user_token = self.client.post('/api-token-auth/', self.data).data['token']
         self.user = Token.objects.get(key=self.user_token).user
+
+def to_hyperlink(id, prefix: str):
+    return f'/rest/{prefix}/{id}/'

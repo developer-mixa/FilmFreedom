@@ -48,7 +48,7 @@ def get_tickets_by_film_cinema(model: Film | Cinema) -> list[Ticket]:
 
 # pages
 
-def main_page(request: WSGIRequest):
+def main_page(request):
     return generate_html_page(request, template.INDEX)
 
 def films_page(request: WSGIRequest):
@@ -89,7 +89,7 @@ def register_page(request: WSGIRequest):
             errors = form.errors
     else:
         form = RegistrationForm()
-    return render(
+    return generate_html_page(
         request,
         template.REGISTER,
         {'form': form, 'errors': errors},
