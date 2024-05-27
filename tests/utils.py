@@ -85,3 +85,5 @@ class WithAuthTest(TestCase):
 
 def to_hyperlink(id, prefix: str):
     return f'/rest/{prefix}/{id}/'
+
+TEST_URL_IMAGE = 'https://upload.wikimedia.org/wikipedia/ru/9/9d/Matrix-DVD.jpg'

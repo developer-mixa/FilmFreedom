@@ -25,7 +25,7 @@ def check_positive(number: int | float):
             params={'number' : number}
             )
     
-def check_rating(rating:  float):
+def check_rating(rating: float):
     if rating > 5:
         raise ValidationError(
             'rating must be <= 5!',
@@ -56,7 +56,7 @@ class Film(UUIDMixin, UrlMixin):
     description = models.TextField(max_length=1024, null=False, blank=False)
     rating = models.DecimalField(decimal_places=1,max_digits=2,null=False, validators=[check_positive, check_rating])    
 
-    cinemas = models.ManyToManyField('Cinema', through='FilmCinema', verbose_name='cinemas')
+    cinemas = models.ManyToManyField('Cinema', through='FilmCinema', verbose_name='cinemas', blank=True)
 
     def __str__(self) -> str:
         return f'name={self.name} rating={self.rating}'
@@ -80,7 +80,7 @@ class Ticket(UUIDMixin):
     place = models.TextField(max_length=256, null=False, blank=False)
     price = models.DecimalField(decimal_places=2,max_digits=10,null=False, validators=[check_positive])
 
-    film_cinema = models.OneToOneField(FilmCinema, on_delete=models.CASCADE)
+    film_cinema = models.OneToOneField(FilmCinema, on_delete=models.CASCADE, blank=True)
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 

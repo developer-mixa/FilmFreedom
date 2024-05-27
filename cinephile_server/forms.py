@@ -1,3 +1,4 @@
+from typing import Any
 from .models import Film, Ticket
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
@@ -6,6 +7,17 @@ from django.contrib.auth.models import User
 
 
 class FilmForm(forms.ModelForm):
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+        cinemas = cleaned_data.get('cinemas')
+
+        if not cinemas:
+            cleaned_data['cinemas'] = []
+            return cleaned_data
+        
+        return cleaned_data
+
     class Meta:
         model = Film
         fields = '__all__'
