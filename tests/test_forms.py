@@ -1,7 +1,7 @@
 from django.test import TestCase
 from cinephile_server.forms import RegistrationForm, FilmForm, TicketForm
 from django.contrib.auth.models import User
-from tests.utils import TEST_URL_IMAGE
+from tests.data import TEST_URL_IMAGE
 from datetime import datetime
 
 valid_data = {
