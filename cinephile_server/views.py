@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth.models import User
 from .serializers import UserSerializer, CinemaSerializer, FilmSerializer, TicketSerializer, FilmCinemaSerializer
@@ -40,10 +40,14 @@ def __generate_html_page(request, template_name, context=None, extension='html')
 
 def __get_tickets_by_film_cinema(model: Film | Cinema) -> list[Ticket]:
     film_cinemas = model.filmcinema_set.all()
-    tickets = Ticket.objects.prefetch_related(
+    all_tickets = Ticket.objects.prefetch_related(
         Prefetch('film_cinema', queryset=film_cinemas, to_attr='film_cinemas')
     )
-    return tickets 
+    tickets = []
+    for ticket in all_tickets:
+        if model.id in (ticket.film_cinema.film.id, ticket.film_cinema.cinema.id):
+            tickets.append(ticket)
+    return tickets
 
 # pages
 
@@ -100,7 +104,6 @@ def book_ticket(request: WSGIRequest):
     if request.method == 'POST':
         if request.user.is_authenticated:
             ticket_id = request.GET.get('ticket_id')
-            print(ticket_id)
             ticket = Ticket.objects.get(id=ticket_id)
             ticket.user = request.user
             ticket.save()
