@@ -1,52 +1,72 @@
+"""Module for testing api."""
+
+
+from django.contrib.auth.models import User
 from django.test import TestCase
+from django.utils import timezone
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
-from django.contrib.auth.models import User
-from rest_framework import status
-from tests.utils import make_simple_test, WithAuthTest, to_hyperlink
-from tests.data import TEST_CINEMA_ATTRS, TEST_FILM_ATTRS
-from cinephile_server.models import Cinema, Film, Ticket, FilmCinema
-from django.utils import timezone
 
-CinemaViewSetTest = make_simple_test(Cinema, '/rest/cinema/', TEST_CINEMA_ATTRS)
-FilmViewSetTest = make_simple_test(Film, '/rest/film/', TEST_FILM_ATTRS)
+from cinephile_server.models import Cinema, Film, FilmCinema, Ticket
+from tests.data import test_cinema_attrs, test_film_attrs
+from tests.utils import WithAuthTest, create_hyperlink, make_simple_test
+
+CinemaViewSetTest = make_simple_test(Cinema, '/rest/cinema/', test_cinema_attrs)
+FilmViewSetTest = make_simple_test(Film, '/rest/film/', test_film_attrs)
+
 
 class AuthTest(TestCase):
+    """Test for authenfication."""
+
     def setUp(self):
+        """Set up start things for tests."""
         self.client = APIClient()
 
     def test_auth_user(self):
-        data = {
+        """Test authenfication for user."""
+        auth_data = {
             'username': 'testuser2',
             'email': 'testuser@example.com',
-            'password': 'testpassword'
+            'password': 'testpassword',
         }
 
-        #test registration
-        response = self.client.post('/rest/user/', data)
+        # test registration
+        response = self.client.post('/rest/user/', auth_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        #test sign-in
-        response = self.client.post('/api-token-auth/', data)
+        # test sign-in
+        response = self.client.post('/api-token-auth/', auth_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        #test sign-in with wrong password
-        data['password'] = 'wrong_password'
-        response = self.client.post('/api-token-auth/', data)
+        # test sign-in with wrong password
+        auth_data['password'] = 'wrong_password'
+        response = self.client.post('/api-token-auth/', auth_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+
 class FilmCinemaTest(WithAuthTest):
+    """Class for testing film cinema."""
+
     def manage(self, user: User, token: Token, put_status: int, delete_status: int):
+        """Test put and delete methods.
+
+        Args:
+            user: user to authenticate
+            token: token to authenticate
+            put_status : status which asserts for put
+            delete_status (int): status which asserts for delete
+        """
         self.client.force_authenticate(user=user, token=token)
         url = '/rest/film_cinema/'
 
-        film = Film.objects.create(**TEST_FILM_ATTRS)
-        cinema = Cinema.objects.create(**TEST_CINEMA_ATTRS)
+        film = Film.objects.create(**test_film_attrs)
+        cinema = Cinema.objects.create(**test_cinema_attrs)
 
         film_cinema_attrs = {'film': film, 'cinema': cinema}
-        film_cinema_id = FilmCinema.objects.create(**{'film': film, 'cinema': cinema}).id
-        film_cinema_attrs['cinema'] = to_hyperlink(cinema.id, 'cinema')
-        film_cinema_attrs['film'] = to_hyperlink(film.id, 'film')
+        film_cinema_id = FilmCinema.objects.create(film=film, cinema=cinema).id
+        film_cinema_attrs['cinema'] = create_hyperlink(cinema.id, 'cinema')
+        film_cinema_attrs['film'] = create_hyperlink(film.id, 'film')
 
         self.client.session.save()
 
@@ -61,14 +81,21 @@ class FilmCinemaTest(WithAuthTest):
         self.assertEqual(response.status_code, delete_status)
 
     def post(self, user, token, post_status):
+        """Test post method.
+
+        Args:
+            user: user to authenticate
+            token: token to authenticate
+            post_status: status which asserts
+        """
         self.client.force_authenticate(user=user, token=token)
         url = '/rest/film_cinema/'
 
-        film = Film.objects.create(**TEST_FILM_ATTRS)
-        cinema = Cinema.objects.create(**TEST_CINEMA_ATTRS)
+        film = Film.objects.create(**test_film_attrs)
+        cinema = Cinema.objects.create(**test_cinema_attrs)
 
-        film_id = to_hyperlink(film.id, 'film')
-        cinema_id = to_hyperlink(cinema.id, 'cinema')
+        film_id = create_hyperlink(film.id, 'film')
+        cinema_id = create_hyperlink(cinema.id, 'cinema')
 
         film_cinema_attrs = {'film': film_id, 'cinema': cinema_id}
 
@@ -77,6 +104,7 @@ class FilmCinemaTest(WithAuthTest):
         self.assertEqual(response.status_code, post_status)
 
     def test_manage_user(self):
+        """Test manage for user."""
         self.post(self.user, self.user_token, status.HTTP_403_FORBIDDEN)
         self.manage(
             self.user, self.user_token,
@@ -85,6 +113,7 @@ class FilmCinemaTest(WithAuthTest):
         )
 
     def test_manage_superuser(self):
+        """Test manage for superuser."""
         self.post(self.superuser, self.superuser_token, status.HTTP_201_CREATED)
         self.manage(
             self.superuser, self.superuser_token,
@@ -92,22 +121,37 @@ class FilmCinemaTest(WithAuthTest):
             delete_status=status.HTTP_204_NO_CONTENT,
         )
 
-class TicketTest(WithAuthTest):
 
-    def get_ticket_attrs(self):
-        film = Film.objects.create(**TEST_FILM_ATTRS)
-        cinema = Cinema.objects.create(**TEST_CINEMA_ATTRS)
-        film_cinema = FilmCinema.objects.create(**{'film': film, 'cinema': cinema})
+class TicketTest(WithAuthTest):
+    """Class for testing ticket."""
+
+    def get_ticket_filmcinema_attrs(self) -> tuple:
+        """Return ticket and filmcinema attrs.
+
+        Returns:
+            tuple: film cinema and ticket attrs
+        """
+        film = Film.objects.create(**test_film_attrs)
+        cinema = Cinema.objects.create(**test_cinema_attrs)
+        film_cinema = FilmCinema.objects.create(film=film, cinema=cinema)
         current_time = timezone.now().time()
         ticket_attrs = {'time': current_time, 'place': 'test_place', 'film_cinema': film_cinema}
         return film_cinema, ticket_attrs
 
     def manage(self, user: User, token: Token, put_status: int, delete_status: int):
+        """Test put and delete methods.
+
+        Args:
+            user: user to authenticate
+            token: token to authenticate
+            put_status : status which asserts for put
+            delete_status (int): status which asserts for delete
+        """
         self.client.force_authenticate(user=user, token=token)
         url = '/rest/ticket/'
-        film_cinema, ticket_attrs = self.get_ticket_attrs()
+        film_cinema, ticket_attrs = self.get_ticket_filmcinema_attrs()
         ticket_id = Ticket.objects.create(**ticket_attrs).id
-        ticket_attrs['film_cinema'] = to_hyperlink(film_cinema.id, 'film_cinema')
+        ticket_attrs['film_cinema'] = create_hyperlink(film_cinema.id, 'film_cinema')
 
         self.client.session.save()
 
@@ -120,16 +164,24 @@ class TicketTest(WithAuthTest):
         # DELETE
         response = self.client.delete(object_url)
         self.assertEqual(response.status_code, delete_status)
-    
-    def post(self, user, token, post_status):
+
+    def post(self, user: User, token: Token, post_status: int):
+        """Test post method.
+
+        Args:
+            user: user to authenticate
+            token: token to authenticate
+            post_status: status which asserts
+        """
         self.client.force_authenticate(user=user, token=token)
         url = '/rest/ticket/'
-        film_cinema, ticket_attrs = self.get_ticket_attrs()
-        ticket_attrs['film_cinema'] = to_hyperlink(film_cinema.id, 'film_cinema')
+        film_cinema, ticket_attrs = self.get_ticket_filmcinema_attrs()
+        ticket_attrs['film_cinema'] = create_hyperlink(film_cinema.id, 'film_cinema')
         response = self.client.post(url, ticket_attrs)
         self.assertEqual(response.status_code, post_status)
 
     def test_manage_user(self):
+        """Test manage for user."""
         self.post(self.user, self.user_token, status.HTTP_201_CREATED)
         self.manage(
             self.user, self.user_token,
@@ -138,6 +190,7 @@ class TicketTest(WithAuthTest):
         )
 
     def test_manage_superuser(self):
+        """Test manage for superuser."""
         self.post(self.superuser, self.superuser_token, status.HTTP_201_CREATED)
         self.manage(
             self.superuser, self.superuser_token,

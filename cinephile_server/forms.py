@@ -1,12 +1,21 @@
+"""Module for all forms."""
+
+
 from typing import Any
-from .models import Film, Ticket
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.forms import CharField, EmailField
 from django.contrib.auth.models import User
+
+from .models import Film, Ticket
+
+FIRST_NAME_MAX_LENGTH = 100
+LAST_NAME_MAX_LENGTH = 100
+EMAIL_MAX_LENGTH = 200
 
 
 class FilmForm(forms.ModelForm):
+    """Form for film."""
 
     def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
@@ -15,7 +24,7 @@ class FilmForm(forms.ModelForm):
         if not cinemas:
             cleaned_data['cinemas'] = []
             return cleaned_data
-        
+
         return cleaned_data
 
     class Meta:
@@ -27,18 +36,19 @@ class FilmForm(forms.ModelForm):
 
 
 class TicketForm(forms.ModelForm):
+    """Form for ticket."""
+
     class Meta:
         model = Ticket
         fields = '__all__'
-        widgets = {
-            'price': forms.NumberInput(attrs={'min': '0', 'step': 1}),
-        }
+
 
 class RegistrationForm(UserCreationForm):
-    first_name = CharField(max_length=100, required=True)
-    last_name = CharField(max_length=100, required=True)
-    email = EmailField(max_length=200, required=True)
+    """Form for registration."""
 
+    first_name = forms.CharField(max_length=FIRST_NAME_MAX_LENGTH, required=True)
+    last_name = forms.CharField(max_length=LAST_NAME_MAX_LENGTH, required=True)
+    email = forms.EmailField(max_length=EMAIL_MAX_LENGTH, required=True)
 
     class Meta:
         model = User

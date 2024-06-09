@@ -1,47 +1,16 @@
-from django.contrib.auth.models import User
-from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Prefetch
-from django.shortcuts import HttpResponse, HttpResponseRedirect, redirect, render
-from rest_framework.viewsets import ModelViewSet
+"""Module for all pages."""
 
-import cinephile_server.template_names as template
-
-from .auth import LoginAdminRequired, LoginRequired
-from .forms import RegistrationForm
-from .models import Cinema, Film, FilmCinema, Ticket
-from .serializers import (CinemaSerializer, FilmCinemaSerializer,
-                          FilmSerializer, TicketSerializer, UserSerializer)
 
 from uuid import UUID
 
-# viewsets
+from django.contrib.auth.models import User
+from django.core.handlers.wsgi import WSGIRequest
+from django.db.models import Prefetch
+from django.shortcuts import HttpResponse, redirect, render
 
-
-class UserViewSet(ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class CinemaViewSet(LoginAdminRequired, ModelViewSet):
-    queryset = Cinema.objects.all()
-    serializer_class = CinemaSerializer
-
-
-class FilmViewSet(LoginAdminRequired, ModelViewSet):
-    queryset = Film.objects.all()
-    serializer_class = FilmSerializer
-
-
-class FilmCinemaViewSet(LoginAdminRequired, ModelViewSet):
-    queryset = FilmCinema.objects.all()
-    serializer_class = FilmCinemaSerializer
-
-
-class TicketViewSet(LoginRequired, ModelViewSet):
-    queryset = Ticket.objects.all()
-    serializer_class = TicketSerializer
-
-# helpers
+import cinephile_server.template_names as template
+from cinephile_server.forms import RegistrationForm
+from cinephile_server.models import Cinema, Film, Ticket
 
 
 def __generate_html_page(request, template_name, context=None, extension='html') -> HttpResponse:
@@ -53,15 +22,17 @@ def __generate_html_page(request, template_name, context=None, extension='html')
 def __get_tickets_by_film_cinema(model: Film | Cinema) -> list[Ticket]:
     film_cinemas = model.filmcinema_set.all()
     all_tickets = Ticket.objects.prefetch_related(
-        Prefetch('film_cinema', queryset=film_cinemas, to_attr='film_cinemas')
+        Prefetch('film_cinema', queryset=film_cinemas, to_attr='film_cinemas'),
     )
     tickets = []
     for ticket in all_tickets:
-        if model.id in (ticket.film_cinema.film.id, ticket.film_cinema.cinema.id):
+        ids = (ticket.film_cinema.film.id, ticket.film_cinema.cinema.id)
+        if model.id in ids:
             tickets.append(ticket)
     return tickets
 
-def __generate_detail_page(request, model, pk):
+
+def __generate_detail_page(request, model, pk) -> HttpResponse:
     got_model = model.objects.get(id=pk)
     tickets = __get_tickets_by_film_cinema(got_model)
     return __generate_html_page(request, template.FILM_DETAILS, {'film': got_model, 'tickets': tickets})
@@ -69,19 +40,52 @@ def __generate_detail_page(request, model, pk):
 # pages
 
 
-def main_page(request):
+def main_page(request) -> HttpResponse:
+    """Return main page.
+
+    Args:
+        request (WSGIRequest): django request
+
+    Returns:
+        HttpResponse: main page
+    """
     return __generate_html_page(request, template.INDEX)
 
 
-def films_page(request: WSGIRequest):
+def films_page(request: WSGIRequest) -> HttpResponse:
+    """Return films page.
+
+    Args:
+        request (WSGIRequest): django request
+
+    Returns:
+        HttpResponse: films page
+    """
     return __generate_html_page(request, template.FILMS, {template.FILMS: Film.objects.all()})
 
 
-def cinemas_page(request: WSGIRequest):
+def cinemas_page(request: WSGIRequest) -> HttpResponse:
+    """Return cinemas page.
+
+    Args:
+        request (WSGIRequest): django request
+
+    Returns:
+        HttpResponse: cinemas page
+    """
     return __generate_html_page(request, template.CINEMAS, {template.CINEMAS: Cinema.objects.all()})
 
 
-def film_detail_page(request: WSGIRequest, pk):
+def film_detail_page(request: WSGIRequest, pk) -> HttpResponse:
+    """Return film detail page.
+
+    Args:
+        request (WSGIRequest): django request
+        pk (_type_): film detail primary key
+
+    Returns:
+        HttpResponse: film detail page
+    """
     return __generate_detail_page(request, Film, pk)
 
 
@@ -166,38 +170,3 @@ def register_page(request: WSGIRequest):
         template.REGISTER,
         {'form': form, 'errors': errors},
     )
-
-# queries
-
-
-def __set_ticket_state(request: WSGIRequest, cancel_ticket=False) -> HttpResponse | HttpResponseRedirect:
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            ticket = Ticket.objects.get(id=request.GET.get('ticket_id'))
-            ticket.user = None if cancel_ticket else request.user
-            ticket.save()
-        else:
-            return redirect(template.LOGIN)
-        return booked_tickets_page(request)
-    return HttpResponse('Something went wrong...') 
-
-def book_ticket(request: WSGIRequest) -> HttpResponse | HttpResponseRedirect:
-    """
-    Books a ticket for a user if they are authenticated.
-
-    This function handles the booking process for a ticket identified by a ticket ID passed via GET parameters.
-    If the user is authenticated, it assigns the ticket to the user and saves the change. Otherwise, it redirects
-    unauthenticated users to the login page. After successfully booking a ticket, it redirects the user to the
-    booked tickets page. If any error occurs during this process, it returns a generic error message.
-
-    Parameters:
-        request (WSGIRequest): The Django HttpRequest object containing details about the incoming HTTP request.
-
-    Returns:
-        HttpResponse: Redirects to the booked tickets page upon successful booking or returns a generic error message
-                     if something goes wrong.
-    """
-    return __set_ticket_state(request)
-
-def cancel_ticket(request: WSGIRequest) -> HttpResponse | HttpResponseRedirect:
-    return __set_ticket_state(request, cancel_ticket=True)

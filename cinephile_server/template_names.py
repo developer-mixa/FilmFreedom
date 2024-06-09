@@ -1,3 +1,6 @@
+"""Module for template names."""
+
+
 INDEX = 'index'
 FILMS = 'films'
 CINEMAS = 'cinemas'
