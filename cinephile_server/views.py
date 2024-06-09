@@ -170,6 +170,17 @@ def register_page(request: WSGIRequest):
 # queries
 
 
+def __set_ticket_state(request: WSGIRequest, cancel_ticket=False) -> HttpResponse | HttpResponseRedirect:
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            ticket = Ticket.objects.get(id=request.GET.get('ticket_id'))
+            ticket.user = None if cancel_ticket else request.user
+            ticket.save()
+        else:
+            return redirect(template.LOGIN)
+        return booked_tickets_page(request)
+    return HttpResponse('Something went wrong...') 
+
 def book_ticket(request: WSGIRequest) -> HttpResponse | HttpResponseRedirect:
     """
     Books a ticket for a user if they are authenticated.
@@ -186,12 +197,7 @@ def book_ticket(request: WSGIRequest) -> HttpResponse | HttpResponseRedirect:
         HttpResponse: Redirects to the booked tickets page upon successful booking or returns a generic error message
                      if something goes wrong.
     """
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            ticket = Ticket.objects.get(id=request.GET.get('ticket_id'))
-            ticket.user = request.user
-            ticket.save()
-        else:
-            return redirect(template.LOGIN)
-        return booked_tickets_page(request)
-    return HttpResponse('Something went wrong...')
+    return __set_ticket_state(request)
+
+def cancel_ticket(request: WSGIRequest) -> HttpResponse | HttpResponseRedirect:
+    return __set_ticket_state(request, cancel_ticket=True)

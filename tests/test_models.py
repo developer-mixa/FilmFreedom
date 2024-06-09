@@ -51,9 +51,9 @@ def get_valid_ticket_attrs(film_cinema):
 
 def get_invalid_ticket_attrs(film_cinema):
     return (
-            {'time' : time, 'place': 'test', 'price': 100.13218182191818, 'film_cinema': film_cinema},
-            {'time' : time, 'place': 'test', 'price': -1, 'film_cinema': film_cinema},
-            {'time' : None, 'place': None, 'price': None, 'film_cinema': None},
+            {'time' : time, 'place': 'test', 'film_cinema': film_cinema},
+            {'time' : time, 'place': 'test', 'film_cinema': film_cinema},
+            {'time' : None, 'place': None, 'film_cinema': None},
         )
 
 

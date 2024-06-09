@@ -57,7 +57,7 @@ def create_dynamic_form_test(form, data, error_field: str):
         def test_valid(self):
             self.assertTrue(self.form(self.form_data).is_valid())
         
-        def test_rating_in_range(self):
+        def test_error_field_in_range(self):
             self.form_data[error_field] = -1
             self.assertFalse(self.form(self.form_data).is_valid())
         
@@ -67,12 +67,6 @@ def create_dynamic_form_test(form, data, error_field: str):
     return TestForm
 
 
-ticket_data = {
-    'time': datetime.now().time(),
-    'place': 'some_place',
-    'price': 100
-    }
-
 film_data = {
     'name' : 'film_name',
     'description' : 'film_description',
@@ -81,4 +75,3 @@ film_data = {
 }
 
 TestFilmForm = create_dynamic_form_test(FilmForm, film_data, 'rating')
-TicketFormTest = create_dynamic_form_test(TicketForm, ticket_data, 'price')

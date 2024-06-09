@@ -11,7 +11,7 @@ class BookTicketTest(TestCase):
         cinema = Cinema.objects.create(name="Test Cinema", address="123 Test Street")
         film = Film.objects.create(name="Test Film", description="A great film.", rating=1)
         film_cinema = FilmCinema.objects.create(cinema=cinema, film=film)
-        self.ticket = Ticket.objects.create(time="20:00", place="Seat 1", price=100.00, film_cinema=film_cinema)
+        self.ticket = Ticket.objects.create(time="20:00", place="Seat 1", film_cinema=film_cinema)
         self.book_ticket_url = f'/book_tickets/?ticket_id={self.ticket.id}'
 
     def test_book_ticket_authenticated(self):

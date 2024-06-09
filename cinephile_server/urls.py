@@ -25,6 +25,7 @@ urlpatterns = [
     path('films/<uuid:pk>/', views.film_detail_page, name='film'),
     path('cinemas/<uuid:pk>/', views.cinema_detail_page, name='cinema'),
     path('book_tickets/', views.book_ticket, name='book_ticket'),
+    path('cancel_ticket/', views.cancel_ticket, name='cancel_ticket'),
     path('tickets/', views.booked_tickets_page, name='tickets'),
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),

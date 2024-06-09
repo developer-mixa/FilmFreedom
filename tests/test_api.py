@@ -99,7 +99,7 @@ class TicketTest(WithAuthTest):
         cinema = Cinema.objects.create(**TEST_CINEMA_ATTRS)
         film_cinema = FilmCinema.objects.create(**{'film': film, 'cinema': cinema})
         current_time = timezone.now().time()
-        ticket_attrs = {'time': current_time, 'place': 'test_place', 'price': 100, 'film_cinema': film_cinema}
+        ticket_attrs = {'time': current_time, 'place': 'test_place', 'film_cinema': film_cinema}
         return film_cinema, ticket_attrs
 
     def manage(self, user: User, token: Token, put_status: int, delete_status: int):
