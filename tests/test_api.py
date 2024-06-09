@@ -74,8 +74,6 @@ class FilmCinemaTest(WithAuthTest):
 
         # POST
         response = self.client.post(url, film_cinema_attrs)
-        if response.status_code == 400:
-            print(response.content)
         self.assertEqual(response.status_code, post_status)
 
     def test_manage_user(self):

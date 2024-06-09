@@ -78,7 +78,6 @@ class FilmCinema(UUIDMixin):
 class Ticket(UUIDMixin):
     time = models.TimeField(null=False)
     place = models.TextField(max_length=256, null=False, blank=False)
-    price = models.DecimalField(decimal_places=2,max_digits=10,null=False, validators=[check_positive])
 
     film_cinema = models.OneToOneField(FilmCinema, on_delete=models.CASCADE, blank=True)
 

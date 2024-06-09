@@ -1,7 +1,11 @@
-from django.urls import path, include
+"""Module for urls."""
+
+
 from django.contrib.auth import views as auth_views
-from cinephile_server import views
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+
+from cinephile_server import views
 
 router = DefaultRouter()
 router.register(r'cinema', views.CinemaViewSet, 'cinema')
@@ -23,5 +27,5 @@ urlpatterns = [
     path('book_tickets/', views.book_ticket, name='book_ticket'),
     path('tickets/', views.booked_tickets_page, name='tickets'),
     path('login/', auth_views.LoginView.as_view(), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout')
+    path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
 ]
