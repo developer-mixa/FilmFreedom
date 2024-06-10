@@ -5,7 +5,7 @@ export PG_PORT=5432
 export PG_USER=test
 export PG_PASSWORD=test
 export PG_DBNAME=postgres
-export SECRET_KEY=^9)7&ut$_rx2#=2l73gu^b2+8yz@((&c&4at(sn%7k+$7-e5ar
+export SECRET_KEY=4o7wrqsup*pc*m_etd$mu$8klfl2r$l1_073a+-j_tkvq9a+b7
 export MINIO_ACCESS_KEY_ID=user
 export MINIO_SECRET_ACCESS_KEY=password
 export MINIO_STORAGE_BUCKET_NAME=static
