@@ -25,12 +25,12 @@ jobs:
         pip install -r tests/requirements.txt
         chmod +x tests/test.sh
     - name: Test api
-      run: python3 manage.py test tests.test_api
+      run: ./tests/test.sh tests.test_api
     - name: Test models
-      run: python3 manage.py test tests.test_models
+      run: ./tests/test.sh tests.test_models
     - name: Test views
-      run: python3 manage.py test tests.test_views
+      run: ./tests/test.sh tests.test_views
     - name: Test forms
-      run: python3 manage.py test tests.test_forms
+      run: ./tests/test.sh tests.test_forms
     - name: Test booking tickets
-      run: python3 manage.py test tests.test_book_tickets
+      run: ./tests/test.sh tests.test_book_tickets
