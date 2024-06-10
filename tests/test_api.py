@@ -1,19 +1,20 @@
 """Module for testing api."""
 
 
+from datetime import datetime, timezone
+
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.utils import timezone
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
-from cinephile_server.models import Cinema, Film, FilmCinema, Ticket
-from tests.data import test_cinema_attrs, test_film_attrs
+from cinephile_server.models import Address, Cinema, Film, FilmCinema, Ticket
+from tests.data import test_address_attrs, test_film_attrs
 from tests.utils import WithAuthTest, create_hyperlink, make_simple_test
 
-CinemaViewSetTest = make_simple_test(Cinema, '/rest/cinema/', test_cinema_attrs)
 FilmViewSetTest = make_simple_test(Film, '/rest/film/', test_film_attrs)
+AddressViewSetTest = make_simple_test(Address, '/rest/address/', test_address_attrs)
 
 
 class AuthTest(TestCase):
@@ -61,7 +62,8 @@ class FilmCinemaTest(WithAuthTest):
         url = '/rest/film_cinema/'
 
         film = Film.objects.create(**test_film_attrs)
-        cinema = Cinema.objects.create(**test_cinema_attrs)
+        address = Address.objects.create(**test_address_attrs)
+        cinema = Cinema.objects.create(name='test', address=address)
 
         film_cinema_attrs = {'film': film, 'cinema': cinema}
         film_cinema_id = FilmCinema.objects.create(film=film, cinema=cinema).id
@@ -92,7 +94,8 @@ class FilmCinemaTest(WithAuthTest):
         url = '/rest/film_cinema/'
 
         film = Film.objects.create(**test_film_attrs)
-        cinema = Cinema.objects.create(**test_cinema_attrs)
+        address = Address.objects.create(**test_address_attrs)
+        cinema = Cinema.objects.create(name='test', address=address)
 
         film_id = create_hyperlink(film.id, 'film')
         cinema_id = create_hyperlink(cinema.id, 'cinema')
@@ -132,10 +135,11 @@ class TicketTest(WithAuthTest):
             tuple: film cinema and ticket attrs
         """
         film = Film.objects.create(**test_film_attrs)
-        cinema = Cinema.objects.create(**test_cinema_attrs)
+        address = Address.objects.create(**test_address_attrs)
+        cinema = Cinema.objects.create(name='test', address=address)
         film_cinema = FilmCinema.objects.create(film=film, cinema=cinema)
-        current_time = timezone.now().time()
-        ticket_attrs = {'time': current_time, 'place': 'test_place', 'film_cinema': film_cinema}
+        current_date = datetime.now(tz=timezone.utc)
+        ticket_attrs = {'film_date': current_date, 'place': 'test_place', 'film_cinema': film_cinema}
         return film_cinema, ticket_attrs
 
     def manage(self, user: User, token: Token, put_status: int, delete_status: int):

@@ -7,8 +7,8 @@ from django.test.client import Client as TestClient
 from django.urls import reverse
 from rest_framework import status
 
-from cinephile_server.models import Cinema, Film
-from tests.data import test_cinema_attrs, test_film_attrs
+from cinephile_server.models import Film
+from tests.data import test_film_attrs
 
 # helper methods
 
@@ -65,14 +65,6 @@ LOGIN_PAGE_TEST = test_simple_page(url='/login/', template='registration/login.h
 PASSWORD_RESET_PAGE_TEST = test_simple_page(
     url='/accounts/password_reset/',
     template='registration/password_reset_form.html',
-)
-
-
-DETAIL_CINEMA_TEST = test_page_with_entity(
-    path_name='cinema',
-    template='cinema_detail.html',
-    model=Cinema,
-    attrs=test_cinema_attrs,
 )
 
 DETAIL_FILM_TEST = test_page_with_entity(

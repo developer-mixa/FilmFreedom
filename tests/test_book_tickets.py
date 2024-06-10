@@ -1,12 +1,15 @@
 """Module for test booking tickets."""
 
 
+from datetime import datetime, timezone
+
+from data import test_address_attrs
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test import client as test_client
 from rest_framework import status
 
-from cinephile_server.models import Cinema, Film, FilmCinema, Ticket
+from cinephile_server.models import Address, Cinema, Film, FilmCinema, Ticket
 
 
 class BookTicketTest(TestCase):
@@ -17,10 +20,12 @@ class BookTicketTest(TestCase):
         self.client = test_client.Client()
         self.user = User.objects.create_user(username='user', password='user')
         self.client.force_login(self.user)
-        cinema = Cinema.objects.create(name='Test Cinema', address='123 Test Street')
+        address = Address.objects.create(**test_address_attrs)
+        cinema = Cinema.objects.create(name='Test Cinema', address=address)
         film = Film.objects.create(name='Test Film', description='A great film.', rating=1)
         film_cinema = FilmCinema.objects.create(cinema=cinema, film=film)
-        self.ticket = Ticket.objects.create(time='20:00', place='Seat 1', film_cinema=film_cinema)
+        film_date = datetime.now(tz=timezone.utc)
+        self.ticket = Ticket.objects.create(film_date=film_date, place='Seat 1', film_cinema=film_cinema)
         ticket_id = self.ticket.id
         self.book_ticket_url = f'/book_tickets/?ticket_id={ticket_id}'
 

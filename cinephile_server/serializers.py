@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework.serializers import HyperlinkedModelSerializer
 
-from .models import Cinema, Film, FilmCinema, Ticket, Address
+from .models import Address, Cinema, Film, FilmCinema, Ticket
 
 ALL = '__all__'
 
@@ -72,6 +72,7 @@ class FilmCinemaSerializer(HyperlinkedModelSerializer):
 
         model = FilmCinema
         fields = ALL
+
 
 class AddressSerializer(HyperlinkedModelSerializer):
     """Serializer for the Address model."""

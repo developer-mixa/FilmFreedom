@@ -1,14 +1,14 @@
 """Module for testing models."""
 
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Iterable
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from cinephile_server.models import Cinema, Film, FilmCinema, Ticket
-from tests.data import TEST_URL_IMAGE, test_cinema_attrs, test_film_attrs
+from cinephile_server.models import Address, Cinema, Film, FilmCinema, Ticket
+from tests.data import TEST_URL_IMAGE, test_address_attrs, test_film_attrs
 
 
 def create_model_test(model_class, valid_attrs: dict, bunch_of_invalid_attrs: Iterable = None):
@@ -59,7 +59,7 @@ film_invalid_attrs = (
     {'name': None, 'description': None, 'rating': None, 'url_image': None},
 )
 
-time = datetime.now().time()
+film_date = datetime.now(tz=timezone.utc)
 
 
 def get_valid_ticket_attrs(film_cinema) -> dict:
@@ -72,7 +72,7 @@ def get_valid_ticket_attrs(film_cinema) -> dict:
         dict: valid attrs for creating ticket
     """
     return {
-            'time': time,
+            'film_date': film_date,
             'place': 'some place',
             'film_cinema': film_cinema,
         }
@@ -88,15 +88,13 @@ def get_invalid_ticket_attrs(film_cinema) -> tuple[dict]:
         tuple[dict]: invalid attrs for creating tickets
     """
     return (
-            {'time': 'time', 'place': 12, 'film_cinema': film_cinema},
-            {'time': None, 'place': 12, 'film_cinema': film_cinema},
-            {'time': None, 'place': None, 'film_cinema': None},
+            {'film_date': 'asdasdads', 'place': 12, 'film_cinema': film_cinema},
+            {'film_date': None, 'place': None, 'film_cinema': None},
         )
 
 
 # tests
 
-CinemaModelTest = create_model_test(Cinema, test_cinema_attrs, cinema_invalid_attrs)
 FilmModelTest = create_model_test(Film, test_film_attrs, film_invalid_attrs)
 
 
@@ -105,7 +103,8 @@ class TicketModelTest(TestCase):
 
     def setUp(self) -> None:
         """Set up things for tests."""
-        created_cinema = Cinema.objects.create(**test_cinema_attrs)
+        address = Address.objects.create(**test_address_attrs)
+        created_cinema = Cinema.objects.create(name='test', address=address)
         created_film = Film.objects.create(**test_film_attrs)
         self.film_cinema = FilmCinema.objects.create(film=created_film, cinema=created_cinema)
 

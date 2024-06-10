@@ -1,6 +1,7 @@
 """Module for models."""
 
 
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from django.contrib.auth.models import User
@@ -81,23 +82,67 @@ def check_address_len(address: str):
             params={'address': address},
         )
 
+
 def check_body(body: str):
+    """Check the body for correctness.
+
+    Args:
+        body (str): your body
+
+    Raises:
+        ValidationError: django error
+    """
     if not body.isdigit() and len(body) > 1:
         raise ValidationError(
             'Body can only contain one letter',
-            params={'body': body}
+            params={'body': body},
         )
     if body.isdigit():
         check_positive(int(body))
 
 
+def get_datetime() -> datetime:
+    """Return current date time.
+
+    Returns:
+        datetime: current date time
+    """
+    return datetime.now(timezone.utc)
+
+
+def check_created(dt: datetime) -> None:
+    """Check the date is not is past.
+
+    Args:
+        dt (datetime): your date
+
+    Raises:
+        ValidationError: django error
+    """
+    if dt > get_datetime():
+        raise ValidationError(
+            'Datetime is bigger than current datetime!',
+            params={'created': dt},
+        )
+
+
+ADDRESS_NAME_LEN = 256
+
+
 class Address(UUIDMixin):
-    """Model for address"""
-    city_name = models.TextField(max_length=256, null=False, blank=False)
-    street_name = models.TextField(max_length=256, null=False, blank=False)
+    """Model for address."""
+
+    city_name = models.TextField(max_length=ADDRESS_NAME_LEN, null=False, blank=False)
+    street_name = models.TextField(max_length=ADDRESS_NAME_LEN, null=False, blank=False)
     house_number = models.IntegerField(null=False, blank=False, validators=[check_positive])
     apartment_number = models.IntegerField(null=True, blank=True, validators=[check_positive])
     body = models.TextField(null=True, blank=True, validators=[check_body])
+
+    def __str__(self) -> str:
+        return f'{self.city_name}/{self.street_name}/{self.house_number}'
+
+    class Meta:
+        db_table = '"api_data"."address"'
 
 
 class Cinema(UUIDMixin, UrlMixin):
@@ -147,7 +192,7 @@ class FilmCinema(UUIDMixin):
 class Ticket(UUIDMixin):
     """Model for ticket."""
 
-    time = models.TimeField(null=False)
+    film_date = models.DateTimeField(null=True, blank=True, default=get_datetime, validators=[check_created])
     place = models.TextField(max_length=TICKET_MAX_LENGTH, null=False, blank=False)
 
     film_cinema = models.OneToOneField(FilmCinema, on_delete=models.CASCADE, blank=True)

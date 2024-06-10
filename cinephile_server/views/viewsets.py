@@ -6,7 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 
 import cinephile_server.serializers as serializers
 from cinephile_server.auth import LoginAdminRequired, LoginRequired
-from cinephile_server.models import Cinema, Film, FilmCinema, Ticket, Address
+from cinephile_server.models import Address, Cinema, Film, FilmCinema, Ticket
 
 
 class UserViewSet(ModelViewSet):
@@ -44,7 +44,7 @@ class TicketViewSet(LoginRequired, ModelViewSet):
     serializer_class = serializers.TicketSerializer
 
 
-class AddressViewSet(LoginRequired, ModelViewSet):
+class AddressViewSet(LoginAdminRequired, ModelViewSet):
     """ViewSet for addresses."""
 
     queryset = Address.objects.all()

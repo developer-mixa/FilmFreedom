@@ -4,7 +4,7 @@
 from django.contrib import admin
 
 from .forms import FilmForm, TicketForm
-from .models import Cinema, Film, FilmCinema, Ticket, Address
+from .models import Address, Cinema, Film, FilmCinema, Ticket
 
 # inlines
 
@@ -48,6 +48,7 @@ class FilmCinemaAdmin(admin.ModelAdmin):
     """Admin for FilmCinema model."""
 
     model = FilmCinema
+
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
