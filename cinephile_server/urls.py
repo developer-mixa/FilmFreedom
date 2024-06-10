@@ -14,6 +14,7 @@ router.register(r'cinema', viewset.CinemaViewSet, 'cinema')
 router.register(r'film', viewset.FilmViewSet, 'film')
 router.register(r'film_cinema', viewset.FilmCinemaViewSet, 'filmcinema')
 router.register(r'ticket', viewset.TicketViewSet, 'ticket')
+router.register(r'address', viewset.AddressViewSet, 'address')
 router.register(r'user', viewset.UserViewSet, 'user')
 
 urlpatterns = [

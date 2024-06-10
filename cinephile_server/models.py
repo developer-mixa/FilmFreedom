@@ -81,12 +81,30 @@ def check_address_len(address: str):
             params={'address': address},
         )
 
+def check_body(body: str):
+    if not body.isdigit() and len(body) > 1:
+        raise ValidationError(
+            'Body can only contain one letter',
+            params={'body': body}
+        )
+    if body.isdigit():
+        check_positive(int(body))
+
+
+class Address(UUIDMixin):
+    """Model for address"""
+    city_name = models.TextField(max_length=256, null=False, blank=False)
+    street_name = models.TextField(max_length=256, null=False, blank=False)
+    house_number = models.IntegerField(null=False, blank=False, validators=[check_positive])
+    apartment_number = models.IntegerField(null=True, blank=True, validators=[check_positive])
+    body = models.TextField(null=True, blank=True, validators=[check_body])
+
 
 class Cinema(UUIDMixin, UrlMixin):
     """Module for cinema."""
 
     name = models.TextField(max_length=CINEMA_NAME_MAX_LENGTH, null=False, blank=False)
-    address = models.TextField(max_length=ADDRESS_MAX_LENGTH, null=False, validators=[check_address_len])
+    address = models.ForeignKey(Address, verbose_name='address', on_delete=models.CASCADE)
     films = models.ManyToManyField('Film', through='FilmCinema', verbose_name='Films')
 
     def __str__(self) -> str:
