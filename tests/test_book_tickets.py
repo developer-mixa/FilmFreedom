@@ -3,7 +3,7 @@
 
 from datetime import datetime, timezone
 
-from data import test_address_attrs
+from tests.data import test_address_attrs
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test import client as test_client
