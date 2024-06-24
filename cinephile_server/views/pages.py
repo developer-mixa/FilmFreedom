@@ -160,7 +160,7 @@ def register_page(request: WSGIRequest):
         if form.is_valid():
             user: User = form.save()
             user.save()
-            return redirect('')
+            return redirect(template.PROFILE)
         else:
             errors = form.errors
     else:
