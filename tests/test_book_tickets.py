@@ -3,13 +3,13 @@
 
 from datetime import datetime, timezone
 
-from tests.data import test_address_attrs
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test import client as test_client
 from rest_framework import status
 
 from cinephile_server.models import Address, Cinema, Film, FilmCinema, Ticket
+from tests.data import test_address_attrs
 
 
 class BookTicketTest(TestCase):

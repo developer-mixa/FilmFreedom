@@ -10,12 +10,25 @@ from cinephile_server.models import Ticket
 from .pages import booked_tickets_page
 
 
+def __set_ticket_user(ticket_id, user, cancel_ticket=False):
+    try:
+        ticket = Ticket.objects.get(id=ticket_id)
+    except Ticket.DoesNotExist:
+        return 'Ticket does not exist'
+
+    if not cancel_ticket and ticket.user:
+        return 'the ticket is already booked'
+
+    ticket.user = None if cancel_ticket else user
+    ticket.save()
+
+
 def __set_ticket_state(request: WSGIRequest, cancel_ticket=False) -> HttpResponse | HttpResponseRedirect:
     if request.method == 'POST':
         if request.user.is_authenticated:
-            ticket = Ticket.objects.get(id=request.GET.get('ticket_id'))
-            ticket.user = None if cancel_ticket else request.user
-            ticket.save()
+            set_ticket_result = __set_ticket_user(request.GET.get('ticket_id'), request.user, cancel_ticket)
+            if isinstance(set_ticket_result, str):
+                return HttpResponse(set_ticket_result)
         else:
             return redirect(template.LOGIN)
         return booked_tickets_page(request)
