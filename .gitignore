@@ -3,3 +3,9 @@
 *venv*
 *.coverage
 *sent_emails*
+__pycache__/
+*.pyc
+*.sqlite3
+.coverage
+coverage.json
+.env
